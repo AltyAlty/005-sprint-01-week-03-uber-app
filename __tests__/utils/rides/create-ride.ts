@@ -1,27 +1,23 @@
 import request from 'supertest';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { Express } from 'express';
-import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
+import { CreateRideInputDTO } from '../../../src/rides/dto/create-ride.input-dto';
 import { createDriver } from '../drivers/create-driver';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { getRideDto } from './get-ride-dto';
-import { RIDES_PATH } from '../../../src/core/paths/path';
-import { RideViewModel } from '../../../src/rides/types/ride-view-model';
+import { getCreateRideDTO } from './get-create-ride-dto';
+import { RideViewModel } from '../../../src/rides/models/ride.view-model';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
-/*Создаем функцию "createRide()", создающую поездку и возвращающую данные о ней, для целей тестирования.*/
-export async function createRide(app: Express, rideDto?: RideInputDto): Promise<RideViewModel> {
-  /*Создаем водителя для целей тестирования.*/
+export const createRide = async (app: Express, rideDto?: CreateRideInputDTO): Promise<RideViewModel> => {
   const driver = await createDriver(app);
-  /*Получаем DTO с корректными данными поездки для целей тестирования.*/
-  const defaultRideData = getRideDto(driver.id);
-  /*Разбавляем полученный DTO другими данными, если таковые были переданы.*/
+  const defaultRideData = getCreateRideDTO(driver.id);
   const testRideData = { ...defaultRideData, ...rideDto };
 
   const createdRideResponse = await request(app)
-    .post(RIDES_PATH)
+    .post(SETTINGS.RIDES_PATH)
     .set('Authorization', generateBasicAuthToken())
     .send(testRideData)
     .expect(HttpStatus.Created);
 
   return createdRideResponse.body;
-}
+};

@@ -11,17 +11,14 @@ export const getRideByIdHandler = async (
 ) => {
   try {
     const id = req.params.id;
-
     const ride = await ridesRepository.findById(id);
 
     if (!ride) {
-      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
-
+      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Ride was not found' }]));
       return;
     }
 
     const rideViewModel = mapToRideViewModelUtil(ride);
-
     res.send(rideViewModel);
   } catch (error: unknown) {
     console.log(error);

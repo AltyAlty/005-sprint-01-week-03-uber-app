@@ -23,14 +23,16 @@ export const getDriverByIdHandler = async (
 ) => {
   try {
     const id = req.params.id;
+    /*Просим репозиторий "driversRepository" найти водителя по ID в БД.*/
     const driver = await driversRepository.findById(id);
 
+    /*Если водитель не был найден, то сообщаем об этом клиенту.*/
     if (!driver) {
       res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
-
       return;
     }
 
+    /*Если водитель был найден, то сообщаем об этом клиенту.*/
     const driverViewModel = mapToDriverViewModel(driver);
     res.status(HttpStatus.Ok).send(driverViewModel);
   } catch (error: unknown) {

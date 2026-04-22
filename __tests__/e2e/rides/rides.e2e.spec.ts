@@ -7,7 +7,6 @@ import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { clearDb } from '../../utils/clear-db';
 import { createRide } from '../../utils/rides/create-ride';
 import { getRideById } from '../../utils/rides/get-ride-by-id';
-import { RIDES_PATH } from '../../../src/core/paths/path';
 import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
 import { SETTINGS } from '../../../src/core/settings/settings';
 
@@ -27,7 +26,10 @@ describe('Rides API', () => {
 
   it('✅ should return a list of rides; GET /api/rides', async () => {
     await createRide(app);
-    const rideListResponse = await request(app).get(RIDES_PATH).set('Authorization', adminToken).expect(HttpStatus.Ok);
+    const rideListResponse = await request(app)
+      .get(SETTINGS.RIDES_PATH)
+      .set('Authorization', adminToken)
+      .expect(HttpStatus.Ok);
     expect(rideListResponse.body).toBeInstanceOf(Array);
     expect(rideListResponse.body).toHaveLength(2);
   });
@@ -48,7 +50,7 @@ describe('Rides API', () => {
     const createdRide = await createRide(app);
 
     await request(app)
-      .post(`${RIDES_PATH}/${createdRide.id}/actions/finish`)
+      .post(`${SETTINGS.RIDES_PATH}/${createdRide.id}/actions/finish`)
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 

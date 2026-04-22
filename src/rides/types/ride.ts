@@ -1,10 +1,8 @@
-/*Тип для списка валют, которыми можно оплатить поездки.*/
 export enum Currency {
   USD = 'usd',
   EUR = 'eur',
 }
 
-/*Тип для поездок.*/
 export type Ride = {
   clientName: string;
   driver: {

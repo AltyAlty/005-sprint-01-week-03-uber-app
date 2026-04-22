@@ -1,5 +1,5 @@
 import { Driver } from '../types/driver';
-import { DriverInputDto } from '../dto/driver.input-dto';
+import { CreateDriverInputDTO } from '../dto/create-driver.input-dto';
 import { ObjectId, WithId } from 'mongodb';
 import { driverCollection } from '../../db/mongodb/mongo.db';
 
@@ -22,7 +22,7 @@ export const driversRepository = {
   },
 
   /*Создаем метод "update()" для изменения данных водителя по ID в БД.*/
-  async update(id: string, dto: DriverInputDto): Promise<void> {
+  async update(id: string, dto: CreateDriverInputDTO): Promise<void> {
     const updateResult = await driverCollection.updateOne(
       { _id: new ObjectId(id) },
       {

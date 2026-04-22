@@ -3,12 +3,11 @@ import express from 'express';
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
 import { VehicleFeature } from '../../../src/drivers/types/driver';
-import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
+import { CreateDriverInputDTO } from '../../../src/drivers/dto/create-driver.input-dto';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { DRIVERS_PATH } from '../../../src/core/paths/path';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { clearDb } from '../../utils/clear-db';
-import { getDriverDto } from '../../utils/drivers/get-driver-dto';
+import { getCreateDriverDTO } from '../../utils/drivers/get-create-driver-dto';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriverById } from '../../utils/drivers/update-driver-by-id';
@@ -24,19 +23,19 @@ describe('Drivers API', () => {
   /*Генерируем токен для Basic авторизации.*/
   const adminToken = generateBasicAuthToken();
 
-  /*Перед запуском тестов, очищаем БД с данными по водителям.*/
+  /*Перед запуском тестов, запускаем и очищаем БД с данными по водителям.*/
   beforeAll(async () => {
     await runDB(SETTINGS.MONGO_URL, SETTINGS.TEST_DB_NAME);
     await clearDb(app);
   });
 
-  /*???*/
+  /*После того как тесты отработают, отключаемся от БД с данными по водителям.*/
   afterAll(async () => await stopDb());
 
   /*Описываем тест, проверяющий добавление нового водителя в БД.*/
   it('✅ should create a driver; POST /api/drivers', async () => {
-    const newDriver: DriverInputDto = {
-      ...getDriverDto(),
+    const newDriver: CreateDriverInputDTO = {
+      ...getCreateDriverDTO(),
       name: 'Feodor',
       email: 'feodor@example.com',
     };
@@ -50,7 +49,7 @@ describe('Drivers API', () => {
     await createDriver(app);
 
     const driverListResponse = await request(app)
-      .get(DRIVERS_PATH)
+      .get(SETTINGS.DRIVERS_PATH)
       .set('Authorization', adminToken)
       .expect(HttpStatus.Ok);
 
@@ -74,7 +73,7 @@ describe('Drivers API', () => {
   it('✅ should update a driver by ID; PUT /api/drivers/:id', async () => {
     const createdDriver = await createDriver(app);
 
-    const driverUpdateData: DriverInputDto = {
+    const driverUpdateData: CreateDriverInputDTO = {
       name: 'Updated Name',
       phoneNumber: '999-888-7777',
       email: 'updated@example.com',
@@ -111,12 +110,12 @@ describe('Drivers API', () => {
     const createdDriver = await createDriver(app);
 
     await request(app)
-      .delete(`${DRIVERS_PATH}/${createdDriver.id}`)
+      .delete(`${SETTINGS.DRIVERS_PATH}/${createdDriver.id}`)
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
     await request(app)
-      .get(`${DRIVERS_PATH}/${createdDriver.id}`)
+      .get(`${SETTINGS.DRIVERS_PATH}/${createdDriver.id}`)
       .set('Authorization', adminToken)
       .expect(HttpStatus.NotFound);
   });

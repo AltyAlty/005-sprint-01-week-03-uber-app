@@ -1,7 +1,6 @@
 import { Currency } from '../types/ride';
 
-/*DTO для входных данных по поездкам.*/
-export type RideInputDto = {
+export type CreateRideInputDTO = {
   clientName: string;
   price: number;
   currency: Currency;

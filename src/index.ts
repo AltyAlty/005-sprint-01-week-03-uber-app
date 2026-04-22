@@ -11,11 +11,10 @@ const bootstrap = async () => {
   setupApp(app);
   /*Указываем порт для экземпляра приложения Express.*/
   const PORT = SETTINGS.PORT || 5001;
-  /*???*/
+  /*Подключаемся к серверу MongoDB.*/
   await runDB(SETTINGS.MONGO_URL, SETTINGS.DB_NAME);
   /*Запускаем экземпляр приложения Express.*/
   app.listen(PORT, () => console.log(`Example app listening on port ${PORT}`));
-  /*???*/
   return app;
 };
 

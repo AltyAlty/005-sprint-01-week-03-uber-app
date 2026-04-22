@@ -1,4 +1,4 @@
-import { Currency } from './ride';
+import { Currency } from '../types/ride';
 
 export type RideViewModel = {
   id: string;

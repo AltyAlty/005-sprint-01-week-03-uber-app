@@ -6,7 +6,6 @@ import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { clearDb } from '../../utils/clear-db';
 import { Currency } from '../../../src/rides/types/ride';
-import { RIDES_PATH } from '../../../src/core/paths/path';
 import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
 import { SETTINGS } from '../../../src/core/settings/settings';
 
@@ -23,10 +22,10 @@ describe('Rides API body validation check', () => {
   afterAll(async () => await stopDb());
 
   it(`❌ should not create a ride when incorrect body passed; POST /api/rides'`, async () => {
-    await request(app).post(RIDES_PATH).send({}).expect(HttpStatus.Unauthorized);
+    await request(app).post(SETTINGS.RIDES_PATH).send({}).expect(HttpStatus.Unauthorized);
 
     const invalidDataSet1 = await request(app)
-      .post(RIDES_PATH)
+      .post(SETTINGS.RIDES_PATH)
       .set('Authorization', generateBasicAuthToken())
       .send({
         clientName: '   ',
@@ -41,7 +40,7 @@ describe('Rides API body validation check', () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(6);
 
     const invalidDataSet2 = await request(app)
-      .post(RIDES_PATH)
+      .post(SETTINGS.RIDES_PATH)
       .set('Authorization', generateBasicAuthToken())
       .send({
         clientName: 'LA',
@@ -56,7 +55,7 @@ describe('Rides API body validation check', () => {
     expect(invalidDataSet2.body.errorMessages).toHaveLength(5);
 
     const invalidDataSet3 = await request(app)
-      .post(RIDES_PATH)
+      .post(SETTINGS.RIDES_PATH)
       .set('Authorization', generateBasicAuthToken())
       .send({
         driverId: 5000,
@@ -69,7 +68,7 @@ describe('Rides API body validation check', () => {
       .expect(HttpStatus.BadRequest);
 
     expect(invalidDataSet3.body.errorMessages).toHaveLength(1);
-    const riderListResponse = await request(app).get(RIDES_PATH).set('Authorization', adminToken);
+    const riderListResponse = await request(app).get(SETTINGS.RIDES_PATH).set('Authorization', adminToken);
     expect(riderListResponse.body).toHaveLength(0);
   });
 });

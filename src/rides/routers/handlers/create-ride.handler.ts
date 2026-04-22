@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { RideInputDto } from '../../dto/ride-input.dto';
+import { CreateRideInputDTO } from '../../dto/create-ride.input-dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validation-result.middleware';
 import { Ride } from '../../types/ride';
@@ -7,26 +7,22 @@ import { driversRepository } from '../../../drivers/repositories/drivers.reposit
 import { ridesRepository } from '../../repositories/rides.repository';
 import { mapToRideViewModelUtil } from '../mappers/map-to-ride-view-model.util';
 
-export const createRideHandler = async (req: Request<{}, {}, RideInputDto>, res: Response) => {
+export const createRideHandler = async (req: Request<{}, {}, CreateRideInputDTO>, res: Response) => {
   try {
     const driverId = req.body.driverId;
-
     const driver = await driversRepository.findById(driverId);
 
     if (!driver) {
-      res.status(HttpStatus.BadRequest).send(createErrorMessages([{ field: 'id', message: 'Driver not found' }]));
-
+      res.status(HttpStatus.BadRequest).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
       return;
     }
 
-    // Если у водителя сейчас есть заказ, то создать новую поездку нельзя
     const activeRide = await ridesRepository.findActiveRideByDriverId(driverId);
 
     if (activeRide) {
       res
         .status(HttpStatus.BadRequest)
-        .send(createErrorMessages([{ field: 'status', message: 'The driver is currently on a job' }]));
-
+        .send(createErrorMessages([{ field: 'status', message: 'Driver is currently on a trip' }]));
       return;
     }
 
@@ -53,9 +49,7 @@ export const createRideHandler = async (req: Request<{}, {}, RideInputDto>, res:
     };
 
     const createdRide = await ridesRepository.createRide(newRide);
-
     const rideViewModel = mapToRideViewModelUtil(createdRide);
-
     res.status(HttpStatus.Created).send(rideViewModel);
   } catch (error: unknown) {
     console.log(error);

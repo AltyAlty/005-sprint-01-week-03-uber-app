@@ -2,21 +2,20 @@ import request from 'supertest';
 import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { RIDES_PATH } from '../../../src/core/paths/path';
-import { RideViewModel } from '../../../src/rides/types/ride-view-model';
+import { RideViewModel } from '../../../src/rides/models/ride.view-model';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
-/*Создаем функцию "getRideById()", получающую данные о поездке по ID и возвращающую их, для целей тестирования.*/
-export async function getRideById<R = RideViewModel>(
+export const getRideById = async (
   app: Express,
   rideId: string,
   expectedStatus?: HttpStatus,
-): Promise<R> {
+): Promise<RideViewModel> => {
   const testStatus = expectedStatus ?? HttpStatus.Ok;
 
   const getResponse = await request(app)
-    .get(`${RIDES_PATH}/${rideId}`)
+    .get(`${SETTINGS.RIDES_PATH}/${rideId}`)
     .set('Authorization', generateBasicAuthToken())
     .expect(testStatus);
 
   return getResponse.body;
-}
+};

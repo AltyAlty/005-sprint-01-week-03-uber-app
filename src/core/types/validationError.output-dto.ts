@@ -1,5 +1,5 @@
-import { ValidationErrorType } from './validationError';
+import { ValidationErrorType } from './validationErrorType';
 
 /*DTO для объектов, содержащих массивы с сообщениями об ошибках валидации при использовании библиотеки
 express-validator.*/
-export type ValidationErrorDto = { errorMessages: ValidationErrorType[] };
+export type ValidationErrorOutputDTO = { errorMessages: ValidationErrorType[] };

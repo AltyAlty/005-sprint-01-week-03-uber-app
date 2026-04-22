@@ -1,13 +1,14 @@
-import { VehicleFeature } from './driver';
+import { VehicleFeature } from '../types/driver';
 
+/*Исходящая модель для отправки клиенту данных о созданном водителе.*/
 export type DriverViewModel = {
   id: string;
   name: string;
   phoneNumber: string;
   email: string;
   vehicle: {
-    make: string; // e.g., Toyota
-    model: string; // e.g., Camry
+    make: string;
+    model: string;
     year: number;
     licensePlate: string;
     description: string | null;

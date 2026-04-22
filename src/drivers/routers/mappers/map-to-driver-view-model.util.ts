@@ -1,8 +1,10 @@
 import { WithId } from 'mongodb';
 import { Driver } from '../../types/driver';
-import { DriverViewModel } from '../../types/driver-view-model';
+import { DriverViewModel } from '../../models/driver.view-model';
 
-export function mapToDriverViewModel(driver: WithId<Driver>): DriverViewModel {
+/*Создаем функцию "mapToDriverViewModel()" для преобразования объектов с данными о водителях, полученных из БД, в
+объекты типа "DriverViewModel".*/
+export const mapToDriverViewModel = (driver: WithId<Driver>): DriverViewModel => {
   return {
     id: driver._id.toString(),
     name: driver.name,
@@ -11,4 +13,4 @@ export function mapToDriverViewModel(driver: WithId<Driver>): DriverViewModel {
     vehicle: driver.vehicle,
     createdAt: driver.createdAt,
   };
-}
+};

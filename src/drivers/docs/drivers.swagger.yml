@@ -38,7 +38,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DriverInputDto'
+              $ref: '#/components/schemas/CreateDriverInputDTO'
       responses:
         201:
           description: The driver was successfully created
@@ -94,7 +94,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DriverInputDto'
+              $ref: '#/components/schemas/UpdateDriverInputDTO'
       responses:
         204:
           description: Driver updated successfully
@@ -205,7 +205,59 @@ components:
           format: date-time
           description: The date and time when the driver was created
           example: 2023-03-05T12:00:00Z
-    DriverInputDto:
+    CreateDriverInputDTO:
+      type: object
+      required:
+        - name
+        - phoneNumber
+        - email
+        - vehicleMake
+        - vehicleModel
+        - vehicleYear
+        - vehicleLicensePlate
+        - vehicleFeatures
+      properties:
+        name:
+          type: string
+          description: The full name of the driver
+          example: Tom Rider
+        phoneNumber:
+          type: string
+          description: The driver's phone number
+          example: 123-456-7890
+        email:
+          type: string
+          description: The driver's email address
+          example: tom.rider@example.com
+        vehicleMake:
+          type: string
+          description: The make of the vehicle
+          example: Toyota
+        vehicleModel:
+          type: string
+          description: The model of the vehicle
+          example: Camry
+        vehicleYear:
+          type: integer
+          description: The year the vehicle was manufactured
+          example: 2025
+        vehicleLicensePlate:
+          type: string
+          description: The vehicle's license plate number
+          example: XYZ 1234
+        vehicleDescription:
+          type: string
+          nullable: true
+          description: A description of the vehicle, including any notable features or conditions
+          example: A spacious SUV with leather seats and a sunroof
+        vehicleFeatures:
+          type: array
+          items:
+            type: string
+            enum: [ wi-fi, child-seat, pet-friendly ]
+          description: Features available in the vehicle. Choose from the provided options
+          example: [ wi-fi, pet-friendly ]
+    UpdateDriverInputDTO:
       type: object
       required:
         - name

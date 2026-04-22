@@ -1,8 +1,8 @@
 import { WithId } from 'mongodb';
 import { Ride } from '../../types/ride';
-import { RideViewModel } from '../../types/ride-view-model';
+import { RideViewModel } from '../../models/ride.view-model';
 
-export function mapToRideViewModelUtil(ride: WithId<Ride>): RideViewModel {
+export const mapToRideViewModelUtil = (ride: WithId<Ride>): RideViewModel => {
   return {
     id: ride._id.toString(),
     clientName: ride.clientName,
@@ -14,4 +14,4 @@ export function mapToRideViewModelUtil(ride: WithId<Ride>): RideViewModel {
     finishedAt: ride.finishedAt,
     addresses: ride.addresses,
   };
-}
+};

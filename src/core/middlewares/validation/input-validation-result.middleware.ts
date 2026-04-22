@@ -2,13 +2,15 @@
 запроса.*/
 import { FieldValidationError, ValidationError, validationResult } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
-import { ValidationErrorType } from '../../types/validationError';
-import { ValidationErrorDto } from '../../types/validationError.dto';
+import { ValidationErrorType } from '../../types/validationErrorType';
+import { ValidationErrorOutputDTO } from '../../types/validationError.output-dto';
 import { HttpStatus } from '../../types/http-statuses';
 
 /*Создаем функцию "createErrorMessages()" для формирования объектов, содержащих массивы с сообщениями об ошибках
 валидации для случаев, когда библиотека express-validator не используется.*/
-export const createErrorMessages = (errors: ValidationErrorType[]): ValidationErrorDto => ({ errorMessages: errors });
+export const createErrorMessages = (errors: ValidationErrorType[]): ValidationErrorOutputDTO => ({
+  errorMessages: errors,
+});
 
 /*Создаем функцию "formatErrors()" для формирования объектов, содержащих сообщения об ошибках валидации при
 использовании библиотеки express-validator.*/

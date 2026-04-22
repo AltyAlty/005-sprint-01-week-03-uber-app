@@ -11,8 +11,8 @@ export type Driver = {
   phoneNumber: string;
   email: string;
   vehicle: {
-    make: string; // e.g., Toyota
-    model: string; // e.g., Camry
+    make: string;
+    model: string;
     year: number;
     licensePlate: string;
     description: string | null;

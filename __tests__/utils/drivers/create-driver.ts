@@ -1,24 +1,26 @@
 import request from 'supertest';
-import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
+import { CreateDriverInputDTO } from '../../../src/drivers/dto/create-driver.input-dto';
 import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { getDriverDto } from './get-driver-dto';
-import { DRIVERS_PATH } from '../../../src/core/paths/path';
-import { DriverViewModel } from '../../../src/drivers/types/driver-view-model';
+import { getCreateDriverDTO } from './get-create-driver-dto';
+import { DriverViewModel } from '../../../src/drivers/models/driver.view-model';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 /*Создаем функцию "createDriver()", создающую водителя и возвращающую данные о нем, для целей тестирования.*/
-export async function createDriver(app: Express, driverDto?: DriverInputDto): Promise<DriverViewModel> {
-  /*Получаем DTO с корректными данными водителя для целей тестирования.*/
-  const defaultDriverData: DriverInputDto = getDriverDto();
+export const createDriver = async (app: Express, driverDto?: CreateDriverInputDTO): Promise<DriverViewModel> => {
+  /*Получаем DTO с корректными данными для создания водителя для целей тестирования.*/
+  const defaultDriverData: CreateDriverInputDTO = getCreateDriverDTO();
   /*Разбавляем полученный DTO другими данными, если таковые были переданы.*/
   const testDriverData = { ...defaultDriverData, ...driverDto };
 
+  /*Создаем водителя.*/
   const createdDriverResponse = await request(app)
-    .post(DRIVERS_PATH)
+    .post(SETTINGS.DRIVERS_PATH)
     .set('Authorization', generateBasicAuthToken())
     .send(testDriverData)
     .expect(HttpStatus.Created);
 
+  /*Возвращаем тело ответа.*/
   return createdDriverResponse.body;
-}
+};

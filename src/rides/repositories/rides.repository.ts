@@ -17,15 +17,12 @@ export const ridesRepository = {
 
   async createRide(newRide: Ride): Promise<WithId<Ride>> {
     const insertResult = await rideCollection.insertOne(newRide);
-
     return { ...newRide, _id: insertResult.insertedId };
   },
 
   async finishRide(id: string, finishedAt: Date) {
     const updateResult = await rideCollection.updateOne(
-      {
-        _id: new ObjectId(id),
-      },
+      { _id: new ObjectId(id) },
       {
         $set: {
           finishedAt,
@@ -34,10 +31,7 @@ export const ridesRepository = {
       },
     );
 
-    if (updateResult.matchedCount < 1) {
-      throw new Error('Ride not exist');
-    }
-
+    if (updateResult.matchedCount < 1) throw new Error('Ride does not exist');
     return;
   },
 };

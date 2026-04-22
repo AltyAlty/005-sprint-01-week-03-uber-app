@@ -1,21 +1,29 @@
 import request from 'supertest';
 import { Express } from 'express';
-import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { getDriverDto } from './get-driver-dto';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { DRIVERS_PATH } from '../../../src/core/paths/path';
+import { SETTINGS } from '../../../src/core/settings/settings';
+import { getUpdateDriverDTO } from './get-update-driver-dto';
+import { UpdateDriverInputDTO } from '../../../src/drivers/dto/update-driver.input-dto';
 
-/*Создаем функцию "updateDriver()", изменяющую данные водителя по ID и возвращающую их, для целей тестирования.*/
-export async function updateDriverById(app: Express, driverId: string, driverDto?: DriverInputDto): Promise<void> {
-  const defaultDriverData: DriverInputDto = getDriverDto();
+/*Создаем функцию "updateDriverById()", изменяющую данные водителя по ID и возвращающую их, для целей тестирования.*/
+export const updateDriverById = async (
+  app: Express,
+  driverId: string,
+  driverDto?: UpdateDriverInputDTO,
+): Promise<void> => {
+  /*Получаем DTO с корректными данными для изменения водителя для целей тестирования.*/
+  const defaultDriverData: UpdateDriverInputDTO = getUpdateDriverDTO();
+  /*Разбавляем полученный DTO другими данными, если таковые были переданы.*/
   const testDriverData = { ...defaultDriverData, ...driverDto };
 
+  /*Изменяем водителя.*/
   const updatedDriverResponse = await request(app)
-    .put(`${DRIVERS_PATH}/${driverId}`)
+    .put(`${SETTINGS.DRIVERS_PATH}/${driverId}`)
     .set('Authorization', generateBasicAuthToken())
     .send(testDriverData)
     .expect(HttpStatus.NoContent);
 
+  /*Возвращаем тело ответа.*/
   return updatedDriverResponse.body;
-}
+};

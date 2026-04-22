@@ -9,22 +9,28 @@ URI-параметров.*/
 export const deleteDriverHandler = async (req: Request<{ id: string }, {}, {}, {}>, res: Response) => {
   try {
     const id = req.params.id;
+    /*Просим репозиторий "driversRepository" найти водителя по ID в БД.*/
     const driver = await driversRepository.findById(id);
 
+    /*Если водитель не был найден, то сообщаем об этом клиенту.*/
     if (!driver) {
-      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver not found' }]));
+      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
       return;
     }
 
-    // Если у водителя сейчас есть заказ, то удалить его нельзя
+    /*Просим репозиторий "ridesRepository" узнать в БД не находится ли водитель в поездке в данный момент.*/
     const activeRide = await ridesRepository.findActiveRideByDriverId(id);
+
+    /*Если водитель находится в поездке в данный момент, то сообщаем об этом клиенту.*/
     if (activeRide) {
       res
         .status(HttpStatus.BadRequest)
-        .send(createErrorMessages([{ field: 'status', message: 'The driver is currently on a job' }]));
+        .send(createErrorMessages([{ field: 'status', message: 'Driver is currently on a trip' }]));
       return;
     }
 
+    /*Если водитель не находится в поездке в данный момент, то просим репозиторий "driversRepository" удалить водителя
+    по ID в БД и сообщаем об этом клиенту.*/
     await driversRepository.delete(id);
     res.sendStatus(HttpStatus.NoContent);
   } catch (error: unknown) {

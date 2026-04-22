@@ -38,7 +38,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RideInputDto'
+              $ref: '#/components/schemas/CreateRideInputDTO'
       responses:
         201:
           description: Ride successfully created for an existing driver with status online
@@ -184,7 +184,7 @@ components:
               type: string
               example: 456 Elm St, Townsville
               description: Ending address of the ride
-    RideInputDto:
+    CreateRideInputDTO:
       type: object
       required:
         - clientName

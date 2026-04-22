@@ -5,7 +5,7 @@ import { param } from 'express-validator';
 1. Существует в запросе.
 2. Является строкой.
 3. Не является пустым.
-4. Состоит только из цифр.*/
+4. Является типа ObjectId.*/
 export const idValidation = param('id')
   .exists()
   .withMessage('ID is required')

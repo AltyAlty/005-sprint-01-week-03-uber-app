@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { DriverInputDto } from '../../dto/driver.input-dto';
+import { CreateDriverInputDTO } from '../../dto/create-driver.input-dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { Driver } from '../../types/driver';
 import { driversRepository } from '../../repositories/drivers.repository';
 import { mapToDriverViewModel } from '../mappers/map-to-driver-view-model.util';
 
 /*Создаем функцию-обработчик "createDriverHandler()" для POST-запросов для добавления нового водителя.*/
-export const createDriverHandler = async (req: Request<{}, {}, DriverInputDto>, res: Response) => {
+export const createDriverHandler = async (req: Request<{}, {}, CreateDriverInputDTO>, res: Response) => {
   try {
     /*Создаем объект с данными нового водителя.*/
     const newDriver: Driver = {
@@ -24,7 +24,7 @@ export const createDriverHandler = async (req: Request<{}, {}, DriverInputDto>, 
       createdAt: new Date(),
     };
 
-    /*Просим репозиторий "driversRepository" добавить нового водителя в БД.*/
+    /*Просим репозиторий "driversRepository" создать нового водителя в БД.*/
     const createdDriver = await driversRepository.create(newDriver);
     const driverViewModel = mapToDriverViewModel(createdDriver);
     /*Сообщаем об успешном добавлении нового водителя клиенту.*/
