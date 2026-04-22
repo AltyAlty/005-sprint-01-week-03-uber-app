@@ -1,23 +1,34 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { createErrorMessages } from '../../../core/utils/error.utils';
 import { driversRepository } from '../../repositories/drivers.repository';
+import { createErrorMessages } from '../../../core/middlewares/validation/input-validation-result.middleware';
+import { ridesRepository } from '../../../rides/repositories/rides.repository';
 
-/*Создаем функцию-обработчика "deleteDriverHandler()" для DELETE-запросов для удаления водителя по ID при помощи
+/*Создаем функцию-обработчик "deleteDriverHandler()" для DELETE-запросов для удаления водителя по ID при помощи
 URI-параметров.*/
-export const deleteDriverHandler = (req: Request<{ id: string }, {}, {}, {}>, res: Response) => {
-  const id = parseInt(req.params.id);
-  /*Просим репозиторий "driversRepository" найти данные по водителю в БД.*/
-  const driver = driversRepository.findById(id);
+export const deleteDriverHandler = async (req: Request<{ id: string }, {}, {}, {}>, res: Response) => {
+  try {
+    const id = req.params.id;
+    const driver = await driversRepository.findById(id);
 
-  /*Если водитель не был найден, то сообщаем об этом клиенту.*/
-  if (!driver) {
-    res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
-    return;
+    if (!driver) {
+      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver not found' }]));
+      return;
+    }
+
+    // Если у водителя сейчас есть заказ, то удалить его нельзя
+    const activeRide = await ridesRepository.findActiveRideByDriverId(id);
+    if (activeRide) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send(createErrorMessages([{ field: 'status', message: 'The driver is currently on a job' }]));
+      return;
+    }
+
+    await driversRepository.delete(id);
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (error: unknown) {
+    console.log(error);
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  /*Если водитель был найден, то просим репозиторий "driversRepository" удалить его из БД.*/
-  driversRepository.delete(id);
-  /*Сообщаем об успешном удалении водителя клиенту.*/
-  res.sendStatus(HttpStatus.NoContent);
 };

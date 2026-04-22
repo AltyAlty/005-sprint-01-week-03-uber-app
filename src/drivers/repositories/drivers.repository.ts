@@ -1,46 +1,55 @@
 import { Driver } from '../types/driver';
-import { db } from '../../db/in-memory.db';
 import { DriverInputDto } from '../dto/driver.input-dto';
+import { ObjectId, WithId } from 'mongodb';
+import { driverCollection } from '../../db/mongodb/mongo.db';
 
 /*Создаем репозиторий "driversRepository" для работы с данными по водителям в БД.*/
 export const driversRepository = {
   /*Создаем метод "findAll()" для получения данных по всем водителям из БД.*/
-  findAll(): Driver[] {
-    return db.drivers;
+  async findAll(): Promise<WithId<Driver>[]> {
+    return driverCollection.find().toArray();
   },
 
   /*Создаем метод "findById()" для получения данных по водителю по ID из БД.*/
-  findById(id: number): Driver | null {
-    return db.drivers.find((d) => d.id === id) ?? null;
+  async findById(id: string): Promise<WithId<Driver> | null> {
+    return driverCollection.findOne({ _id: new ObjectId(id) });
   },
 
   /*Создаем метод "create()" для добавления нового водителя в БД.*/
-  create(newDriver: Driver): Driver {
-    db.drivers.push(newDriver);
-    return newDriver;
+  async create(newDriver: Driver): Promise<WithId<Driver>> {
+    const insertResult = await driverCollection.insertOne(newDriver);
+    return { ...newDriver, _id: insertResult.insertedId };
   },
 
   /*Создаем метод "update()" для изменения данных водителя по ID в БД.*/
-  update(id: number, dto: DriverInputDto): void {
-    const driver = this.findById(id);
-    if (!driver) throw new Error('Driver does not exist');
-    driver.name = dto.name;
-    driver.phoneNumber = dto.phoneNumber;
-    driver.email = dto.email;
-    driver.vehicleMake = dto.vehicleMake;
-    driver.vehicleModel = dto.vehicleModel;
-    driver.vehicleYear = dto.vehicleYear;
-    driver.vehicleLicensePlate = dto.vehicleLicensePlate;
-    driver.vehicleDescription = dto.vehicleDescription;
-    driver.vehicleFeatures = dto.vehicleFeatures;
+  async update(id: string, dto: DriverInputDto): Promise<void> {
+    const updateResult = await driverCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          name: dto.name,
+          phoneNumber: dto.phoneNumber,
+          email: dto.email,
+          vehicle: {
+            make: dto.vehicleMake,
+            model: dto.vehicleModel,
+            year: dto.vehicleYear,
+            licensePlate: dto.vehicleLicensePlate,
+            description: dto.vehicleDescription,
+            features: dto.vehicleFeatures,
+          },
+        },
+      },
+    );
+
+    if (updateResult.matchedCount < 1) throw new Error('Driver does not exist');
     return;
   },
 
   /*Создаем метод "delete()" для удаления водителя по ID в БД.*/
-  delete(id: number): void {
-    const index = db.drivers.findIndex((d) => d.id === id);
-    if (index === -1) throw new Error('Driver does not exist');
-    db.drivers.splice(index, 1);
+  async delete(id: string): Promise<void> {
+    const deleteResult = await driverCollection.deleteOne({ _id: new ObjectId(id) });
+    if (deleteResult.deletedCount < 1) throw new Error('Driver does not exist');
     return;
   },
 };

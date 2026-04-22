@@ -7,7 +7,12 @@ export const clientNameValidation = body('clientName')
   .trim()
   .isLength({ min: 3, max: 100 });
 
-export const driverIdValidation = body('driverId').isInt({ gt: 0 }).withMessage('ID must be a number');
+export const driverIdValidation = body('driverId')
+  .isString()
+  .withMessage('ID must be a string')
+  .trim()
+  .isMongoId()
+  .withMessage('Incorrect format of ObjectId');
 
 export const priceValidation = body('price')
   /*Проверяем, что поле "price" является числом большим 0.*/

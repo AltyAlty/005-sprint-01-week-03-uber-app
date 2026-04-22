@@ -1,8 +1,8 @@
-import { ADMIN_PASSWORD, ADMIN_USERNAME } from '../../src/auth/middlewares/super-admin.guard-middleware';
+import { SETTINGS } from '../../src/core/settings/settings';
 
 /*Создаем функцию "generateBasicAuthToken()" для генерации токена для Basic авторизации для целей тестирования.*/
 export function generateBasicAuthToken() {
-  const credentials = `${ADMIN_USERNAME}:${ADMIN_PASSWORD}`;
+  const credentials = `${SETTINGS.BASIC_AUTH_ADMIN_USERNAME}:${SETTINGS.BASIC_AUTH_ADMIN_PASSWORD}`;
   const token = Buffer.from(credentials).toString('base64');
   return `Basic ${token}`;
 }

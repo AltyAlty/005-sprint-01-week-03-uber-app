@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
@@ -11,6 +12,8 @@ import { getDriverDto } from '../../utils/drivers/get-driver-dto';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriverById } from '../../utils/drivers/update-driver-by-id';
+import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 /*Описываем тестовый набор.*/
 describe('Drivers API', () => {
@@ -20,8 +23,15 @@ describe('Drivers API', () => {
   setupApp(app);
   /*Генерируем токен для Basic авторизации.*/
   const adminToken = generateBasicAuthToken();
+
   /*Перед запуском тестов, очищаем БД с данными по водителям.*/
-  beforeAll(async () => await clearDb(app));
+  beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL, SETTINGS.TEST_DB_NAME);
+    await clearDb(app);
+  });
+
+  /*???*/
+  afterAll(async () => await stopDb());
 
   /*Описываем тест, проверяющий добавление нового водителя в БД.*/
   it('✅ should create a driver; POST /api/drivers', async () => {
@@ -55,7 +65,7 @@ describe('Drivers API', () => {
 
     expect(driver).toEqual({
       ...createdDriver,
-      id: expect.any(Number),
+      id: expect.any(String),
       createdAt: expect.any(String),
     });
   });
@@ -80,8 +90,18 @@ describe('Drivers API', () => {
     const driverResponse = await getDriverById(app, createdDriver.id);
 
     expect(driverResponse).toEqual({
-      ...driverUpdateData,
       id: createdDriver.id,
+      name: driverUpdateData.name,
+      phoneNumber: driverUpdateData.phoneNumber,
+      email: driverUpdateData.email,
+      vehicle: {
+        description: driverUpdateData.vehicleDescription,
+        features: driverUpdateData.vehicleFeatures,
+        licensePlate: driverUpdateData.vehicleLicensePlate,
+        make: driverUpdateData.vehicleMake,
+        model: driverUpdateData.vehicleModel,
+        year: driverUpdateData.vehicleYear,
+      },
       createdAt: expect.any(String),
     });
   });
@@ -95,10 +115,9 @@ describe('Drivers API', () => {
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
-    const driverResponse = await request(app)
+    await request(app)
       .get(`${DRIVERS_PATH}/${createdDriver.id}`)
-      .set('Authorization', adminToken);
-
-    expect(driverResponse.status).toBe(HttpStatus.NotFound);
+      .set('Authorization', adminToken)
+      .expect(HttpStatus.NotFound);
   });
 });

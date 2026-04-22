@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
@@ -10,13 +11,21 @@ import { clearDb } from '../../utils/clear-db';
 import { getDriverDto } from '../../utils/drivers/get-driver-dto';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
+import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Drivers API body validation check', () => {
   const app = express();
   setupApp(app);
   const adminToken = generateBasicAuthToken();
   const correctTestDriverData: DriverInputDto = getDriverDto();
-  beforeAll(async () => await clearDb(app));
+
+  beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL, SETTINGS.TEST_DB_NAME);
+    await clearDb(app);
+  });
+
+  afterAll(async () => await stopDb());
 
   /*Описываем тест, проверяющий отказ в добавлении водителя с непрошедшими валидацию данными.*/
   it('❌ should not create a driver when incorrect body passed; POST /api/drivers', async () => {
@@ -107,12 +116,7 @@ describe('Drivers API body validation check', () => {
 
     expect(invalidDataSet3.body.errorMessages).toHaveLength(1);
     const driverResponse = await getDriverById(app, createdDriver.id);
-
-    expect(driverResponse).toEqual({
-      ...correctTestDriverData,
-      id: createdDriver.id,
-      createdAt: expect.any(String),
-    });
+    expect(driverResponse).toEqual({ ...createdDriver });
   });
 
   /*Описываем тест, проверяющий отказ в изменении данных водителя с непрошедшими валидацию данными о фичах машины.*/
@@ -129,11 +133,6 @@ describe('Drivers API body validation check', () => {
       .expect(HttpStatus.BadRequest);
 
     const driverResponse = await getDriverById(app, createdDriver.id);
-
-    expect(driverResponse).toEqual({
-      ...correctTestDriverData,
-      id: createdDriver.id,
-      createdAt: expect.any(String),
-    });
+    expect(driverResponse).toEqual({ ...createdDriver });
   });
 });

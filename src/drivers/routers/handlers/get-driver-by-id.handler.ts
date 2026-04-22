@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { Driver } from '../../types/driver';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { createErrorMessages } from '../../../core/utils/error.utils';
 import { driversRepository } from '../../repositories/drivers.repository';
+import { mapToDriverViewModel } from '../mappers/map-to-driver-view-model.util';
+import { createErrorMessages } from '../../../core/middlewares/validation/input-validation-result.middleware';
 
 /*"Request" из Express используется для типизации параметра "req", а "Response" из Express используется для типизации
 параметра "res".
@@ -14,23 +15,26 @@ import { driversRepository } from '../../repositories/drivers.repository';
 3. На третьем месте в типе идет "ReqBody". Это то, что приходит в body в запросе.
 4. На четвертом месте в типе идут Query-параметры.
 
-Создаем функцию-обработчика "getDriverByIdHandler()" для GET-запросов для поиска водителя по ID при помощи
+Создаем функцию-обработчик "getDriverByIdHandler()" для GET-запросов для поиска водителя по ID при помощи
 URI-параметров.*/
-export const getDriverByIdHandler = (
+export const getDriverByIdHandler = async (
   req: Request<{ id: string }, Driver, {}, {}>,
   res: Response<Driver | null | unknown>,
 ) => {
-  /*Метод "parseInt()" возвращает целое число на основе параметра.*/
-  const id = parseInt(req.params.id);
-  /*Просим репозиторий "driversRepository" найти данные по водителю в БД.*/
-  const driver = driversRepository.findById(id);
+  try {
+    const id = req.params.id;
+    const driver = await driversRepository.findById(id);
 
-  /*Если водитель не был найден, то сообщаем об этом клиенту.*/
-  if (!driver) {
-    res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
-    return;
+    if (!driver) {
+      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
+
+      return;
+    }
+
+    const driverViewModel = mapToDriverViewModel(driver);
+    res.status(HttpStatus.Ok).send(driverViewModel);
+  } catch (error: unknown) {
+    console.log(error);
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  /*Если водитель был найден, то сообщаем об этом клиенту.*/
-  res.status(HttpStatus.Ok).send(driver);
 };

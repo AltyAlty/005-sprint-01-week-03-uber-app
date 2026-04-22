@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpStatus } from '../../core/types/http-statuses';
-
-/*Создаем переменные окружения для логина и пароля администратора.*/
-export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'qwerty';
+import { SETTINGS } from '../../core/settings/settings';
 
 export const superAdminGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
   /*Получаем заголовок "Authorization" из запроса. Должно быть вида "Basic <base64-encoded-credentials>"*/
@@ -30,7 +27,7 @@ export const superAdminGuardMiddleware = (req: Request, res: Response, next: Nex
   const [username, password] = credentials.split(':');
 
   /*Если логин и пароль не совпадают с заранее заданными значениями, то сообщаем об этом клиенту.*/
-  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+  if (username !== SETTINGS.BASIC_AUTH_ADMIN_USERNAME || password !== SETTINGS.BASIC_AUTH_ADMIN_PASSWORD) {
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }

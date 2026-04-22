@@ -2,7 +2,7 @@ import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
 import { Currency } from '../../../src/rides/types/ride';
 
 /*Создаем функцию "getRideDto()", возвращающую DTO с корректными данными поездки, для целей тестирования.*/
-export function getRideDto(driverId: number): RideInputDto {
+export function getRideDto(driverId: string): RideInputDto {
   return {
     driverId,
     clientName: 'Bob',

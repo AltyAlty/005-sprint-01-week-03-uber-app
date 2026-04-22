@@ -6,6 +6,7 @@ import { rideInputDtoValidation } from '../validation/ride.input-dto.validation-
 import { createRideHandler } from './handlers/create-ride.handler';
 import { getRideListHandler } from './handlers/get-ride-list.handler';
 import { getRideByIdHandler } from './handlers/get-ride-by-id.handler';
+import { finishRideHandler } from './handlers/finish-ride.handler';
 
 export const ridesRouter = Router({});
 ridesRouter.use(superAdminGuardMiddleware);
@@ -13,4 +14,5 @@ ridesRouter.use(superAdminGuardMiddleware);
 ridesRouter
   .get('', getRideListHandler)
   .get('/:id', idValidation, inputValidationResultMiddleware, getRideByIdHandler)
-  .post('', rideInputDtoValidation, inputValidationResultMiddleware, createRideHandler);
+  .post('', rideInputDtoValidation, inputValidationResultMiddleware, createRideHandler)
+  .post('/:id/actions/finish', idValidation, inputValidationResultMiddleware, finishRideHandler);

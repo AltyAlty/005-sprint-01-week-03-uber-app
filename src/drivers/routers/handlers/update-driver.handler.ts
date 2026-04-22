@@ -1,36 +1,25 @@
 import { Request, Response } from 'express';
-import { Driver } from '../../types/driver';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { createErrorMessages } from '../../../core/utils/error.utils';
-import { driverInputDtoValidation } from '../../validation/driverInputDtoValidation';
 import { driversRepository } from '../../repositories/drivers.repository';
+import { DriverInputDto } from '../../dto/driver.input-dto';
+import { createErrorMessages } from '../../../core/middlewares/validation/input-validation-result.middleware';
 
-/*Создаем функцию-обработчика "updateDriverHandler()" для PUT-запросов для изменения данных водителя по id при помощи
+/*Создаем функцию-обработчик "updateDriverHandler()" для PUT-запросов для изменения данных водителя по id при помощи
 URI-параметров.*/
-export const updateDriverHandler = (req: Request<{ id: string }, {}, Driver, {}>, res: Response) => {
-  const id = parseInt(req.params.id);
-  /*Проводим валидацию DTO для входных данных по водителю, которого нужно изменить. Сейчас не используется, так как
-  используем валидацию при помощи библиотеки express-validator.*/
-  // const errors = driverInputDtoValidation(req.body);
+export const updateDriverHandler = async (req: Request<{ id: string }, {}, DriverInputDto, {}>, res: Response) => {
+  try {
+    const id = req.params.id;
+    const driver = driversRepository.findById(id);
 
-  /*Если были ошибки валидации, то сообщаем об этом клиенту. Сейчас не используется, так как используем валидацию при
-  помощи библиотеки express-validator.*/
-  // if (errors.length > 0) {
-  //   res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
-  //   return;
-  // }
+    if (!driver) {
+      res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver not found' }]));
+      return;
+    }
 
-  /*Просим репозиторий "driversRepository" найти данные по водителю в БД.*/
-  const driver = driversRepository.findById(id);
-
-  /*Если водитель не был найден, то сообщаем об этом клиенту.*/
-  if (!driver) {
-    res.status(HttpStatus.NotFound).send(createErrorMessages([{ field: 'id', message: 'Driver was not found' }]));
-    return;
+    await driversRepository.update(id, req.body);
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (error: unknown) {
+    console.log(error);
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  /*Если водитель был найден, то просим репозиторий "driversRepository" обновить данные водителя в БД.*/
-  driversRepository.update(id, req.body);
-  /*Сообщаем об успешном обновлении данных водителя в БД клиенту.*/
-  res.sendStatus(HttpStatus.NoContent);
 };

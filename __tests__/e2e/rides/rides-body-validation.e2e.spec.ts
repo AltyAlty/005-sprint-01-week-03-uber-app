@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
@@ -6,12 +7,20 @@ import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { clearDb } from '../../utils/clear-db';
 import { Currency } from '../../../src/rides/types/ride';
 import { RIDES_PATH } from '../../../src/core/paths/path';
+import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Rides API body validation check', () => {
   const app = express();
   setupApp(app);
   const adminToken = generateBasicAuthToken();
-  beforeAll(async () => await clearDb(app));
+
+  beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL, SETTINGS.TEST_DB_NAME);
+    await clearDb(app);
+  });
+
+  afterAll(async () => await stopDb());
 
   it(`❌ should not create a ride when incorrect body passed; POST /api/rides'`, async () => {
     await request(app).post(RIDES_PATH).send({}).expect(HttpStatus.Unauthorized);
