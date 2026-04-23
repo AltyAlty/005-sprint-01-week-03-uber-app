@@ -48,7 +48,7 @@ export const createRideHandler = async (req: Request<{}, {}, CreateRideInputDTO>
       },
     };
 
-    const createdRide = await ridesRepository.createRide(newRide);
+    const createdRide = await ridesRepository.create(newRide);
     const rideViewModel = mapToRideViewModelUtil(createdRide);
     res.status(HttpStatus.Created).send(rideViewModel);
   } catch (error: unknown) {

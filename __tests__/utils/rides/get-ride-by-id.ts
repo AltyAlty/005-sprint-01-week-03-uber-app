@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { generateBasicAuthToken } from '../generate-admin-auth-token';
+import { generateBasicAuthToken } from '../auth/generate-admin-auth-token';
 import { RideViewModel } from '../../../src/rides/models/ride.view-model';
 import { SETTINGS } from '../../../src/core/settings/settings';
 

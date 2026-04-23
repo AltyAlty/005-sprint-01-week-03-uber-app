@@ -1,7 +1,7 @@
 import { CreateRideInputDTO } from '../../../src/rides/dto/create-ride.input-dto';
 import { Currency } from '../../../src/rides/types/ride';
 
-export const getCreateRideDTO = (driverId: string): CreateRideInputDTO => {
+export const getCreateRideInputDTO = (driverId: string): CreateRideInputDTO => {
   return {
     driverId,
     clientName: 'Bob',

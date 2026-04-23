@@ -5,14 +5,15 @@ import { setupApp } from '../../../src/setup-app';
 import { VehicleFeature } from '../../../src/drivers/types/driver';
 import { CreateDriverInputDTO } from '../../../src/drivers/dto/create-driver.input-dto';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
-import { clearDb } from '../../utils/clear-db';
-import { getCreateDriverDTO } from '../../utils/drivers/get-create-driver-dto';
+import { generateBasicAuthToken } from '../../utils/auth/generate-admin-auth-token';
+import { clearDb } from '../../utils/db/clear-db';
+import { getCreateDriverInputDTO } from '../../utils/drivers/get-create-driver-input-dto';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriverById } from '../../utils/drivers/update-driver-by-id';
 import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
 import { SETTINGS } from '../../../src/core/settings/settings';
+import { UpdateDriverInputDTO } from '../../../src/drivers/dto/update-driver.input-dto';
 
 /*Описываем тестовый набор.*/
 describe('Drivers API', () => {
@@ -35,7 +36,7 @@ describe('Drivers API', () => {
   /*Описываем тест, проверяющий добавление нового водителя в БД.*/
   it('✅ should create a driver; POST /api/drivers', async () => {
     const newDriver: CreateDriverInputDTO = {
-      ...getCreateDriverDTO(),
+      ...getCreateDriverInputDTO(),
       name: 'Feodor',
       email: 'feodor@example.com',
     };
@@ -73,7 +74,7 @@ describe('Drivers API', () => {
   it('✅ should update a driver by ID; PUT /api/drivers/:id', async () => {
     const createdDriver = await createDriver(app);
 
-    const driverUpdateData: CreateDriverInputDTO = {
+    const driverUpdateData: UpdateDriverInputDTO = {
       name: 'Updated Name',
       phoneNumber: '999-888-7777',
       email: 'updated@example.com',

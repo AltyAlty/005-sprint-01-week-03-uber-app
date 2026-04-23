@@ -15,7 +15,7 @@ export const ridesRepository = {
     return rideCollection.findOne({ driverId, finishedAt: null });
   },
 
-  async createRide(newRide: Ride): Promise<WithId<Ride>> {
+  async create(newRide: Ride): Promise<WithId<Ride>> {
     const insertResult = await rideCollection.insertOne(newRide);
     return { ...newRide, _id: insertResult.insertedId };
   },

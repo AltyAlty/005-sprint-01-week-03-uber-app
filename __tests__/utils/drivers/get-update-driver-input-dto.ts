@@ -1,8 +1,8 @@
 import { UpdateDriverInputDTO } from '../../../src/drivers/dto/update-driver.input-dto';
 
-/*Создаем функцию "getUpdateDriverDTO()", возвращающую DTO с корректными данными для изменения водителя, для целей
+/*Создаем функцию "getUpdateDriverInputDTO()", возвращающую DTO с корректными данными для изменения водителя, для целей
 тестирования.*/
-export const getUpdateDriverDTO = (): UpdateDriverInputDTO => {
+export const getUpdateDriverInputDTO = (): UpdateDriverInputDTO => {
   return {
     name: 'Valentin',
     phoneNumber: '123-456-7890',

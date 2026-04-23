@@ -1,8 +1,8 @@
 import { CreateDriverInputDTO } from '../../../src/drivers/dto/create-driver.input-dto';
 
-/*Создаем функцию "getCreateDriverDTO()", возвращающую DTO с корректными данными для создания водителя, для целей
+/*Создаем функцию "getCreateDriverInputDTO()", возвращающую DTO с корректными данными для создания водителя, для целей
 тестирования.*/
-export const getCreateDriverDTO = (): CreateDriverInputDTO => {
+export const getCreateDriverInputDTO = (): CreateDriverInputDTO => {
   return {
     name: 'Valentin',
     phoneNumber: '123-456-7890',

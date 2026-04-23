@@ -5,9 +5,9 @@ import { setupApp } from '../../../src/setup-app';
 import { VehicleFeature } from '../../../src/drivers/types/driver';
 import { CreateDriverInputDTO } from '../../../src/drivers/dto/create-driver.input-dto';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
-import { clearDb } from '../../utils/clear-db';
-import { getCreateDriverDTO } from '../../utils/drivers/get-create-driver-dto';
+import { generateBasicAuthToken } from '../../utils/auth/generate-admin-auth-token';
+import { clearDb } from '../../utils/db/clear-db';
+import { getCreateDriverInputDTO } from '../../utils/drivers/get-create-driver-input-dto';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { runDB, stopDb } from '../../../src/db/mongodb/mongo.db';
@@ -17,7 +17,7 @@ describe('Drivers API body validation check', () => {
   const app = express();
   setupApp(app);
   const adminToken = generateBasicAuthToken();
-  const correctTestDriverData: CreateDriverInputDTO = getCreateDriverDTO();
+  const correctTestDriverData: CreateDriverInputDTO = getCreateDriverInputDTO();
 
   beforeAll(async () => {
     await runDB(SETTINGS.MONGO_URL, SETTINGS.TEST_DB_NAME);

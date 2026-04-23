@@ -1,4 +1,4 @@
-import { SETTINGS } from '../../src/core/settings/settings';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 /*Создаем функцию "generateBasicAuthToken()" для генерации токена для Basic авторизации для целей тестирования.*/
 export const generateBasicAuthToken = () => {
